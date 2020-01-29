@@ -7,6 +7,7 @@ import java.util.Random;
 public class MonteCarlo {
     private static final int MAX_NB_TRIES = 1000;
     private MonteCarloGame game;
+    private MonteCarloGame realGame;
 
     private Random rand = new Random();
 
@@ -14,20 +15,18 @@ public class MonteCarlo {
     private Map<Integer, Integer> gameResultsPerMove = new HashMap<>();
 
     public MonteCarlo(MonteCarloGame game) {
-        this.game = game;
-        this.game.setupBoard();
+        this.realGame = game;
     }
 
     public int getBestMove() {
-        this.game.setupBoard();
-        int nbStartingMoves = game.getCurrentNbMoves();
+        int nbStartingMoves = realGame.getCurrentNbMoves();
         for (int moveBeingAnalyzed = 0; moveBeingAnalyzed < nbStartingMoves; moveBeingAnalyzed++) {
-            if (moveBeingAnalyzed == 4) {
-                System.out.println();
-            }
             System.out.println("Analyzing move " + moveBeingAnalyzed);
             for (int nbTries = 0; nbTries < MAX_NB_TRIES; nbTries++) {
-                this.game.setupBoard();
+                this.game = this.realGame.deepCopy();
+                if (!((TicTacToeGame) this.game).currentBoard.contains("_")) {
+                    System.out.println();
+                }
                 this.game.playMove(moveBeingAnalyzed);
                 this.game.nextPlayer();
                 while (!game.gameOver()) {
@@ -48,6 +47,6 @@ public class MonteCarlo {
             }
             System.out.println("Finished computing move " + moveBeingAnalyzed);
         }
-        return 0;//FIXME
+        return this.gameResultsPerMove.entrySet().stream().min((o1, o2) -> o2.getValue() - o1.getValue()).map(Map.Entry::getKey).get();
     }
 }

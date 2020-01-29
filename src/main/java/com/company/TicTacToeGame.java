@@ -1,13 +1,31 @@
 package com.company;
 
+import java.util.Scanner;
+
 public class TicTacToeGame extends MonteCarloGame {
+
+//    String realCurrentBoard;
 
     String currentBoard;
 
-    private static int ordinalIndexOf(String str, String substr, int n) {
-        int pos = str.indexOf(substr);
+    public TicTacToeGame() {
+        super();
+    }
+
+    @Override
+    public MonteCarloGame deepCopy() {
+        TicTacToeGame copy = new TicTacToeGame();
+
+        copy.player = this.player;
+        copy.currentBoard = this.currentBoard;
+
+        return copy;
+    }
+
+    private static int ordinalIndexOf(String str, String substring, int n) {
+        int pos = str.indexOf(substring);
         while (--n > 0 && pos != -1)
-            pos = str.indexOf(substr, pos + 1);
+            pos = str.indexOf(substring, pos + 1);
         return pos;
     }
 
@@ -22,11 +40,25 @@ public class TicTacToeGame extends MonteCarloGame {
     public int getCurrentNbMoves() {
         return ((int) currentBoard.chars().filter(c -> c == '_').count());
     }
+//
+//    @Override
+//    public void resetBoardToCurrentState() {
+//        this.currentBoard = realCurrentBoard;
+//    }
 
     @Override
-    public void setupBoard() {
-        currentBoard = "_".repeat(9);
+    public void initialSetup() {
+        this.currentBoard = "_".repeat(9);
+//        this.realCurrentBoard = this.currentBoard;
         this.player = Player.MAIN_PLAYER;
+//        this.realCurrentPlayer = this.player;
+    }
+
+    @Override
+    public void moveOtherPlayer() {
+        System.out.println("What did the other move ?");
+        int move = new Scanner(System.in).nextInt();
+        this.playMove(move);
     }
 
     @Override
@@ -44,6 +76,11 @@ public class TicTacToeGame extends MonteCarloGame {
         return Player.NO_ONE;
     }
 
+    @Override
+    public void tellWhichMoveIsBest(int move) {
+        System.out.println("Choose move n°" + move);
+    }
+
     private boolean wins(String c) {
         return currentBoard.matches("X..X..X..".replace("X", c)) ||
                 currentBoard.matches(".X..X..X.".replace("X", c)) ||
@@ -55,7 +92,7 @@ public class TicTacToeGame extends MonteCarloGame {
                 currentBoard.matches("..X.X.X..".replace("X", c));
     }
 
-    public String displayBoard() {
-        return currentBoard.substring(0, 3) + "\n" + currentBoard.substring(3, 6) + "\n" + currentBoard.substring(6, 9);
+    public void displayBoard() {
+        System.out.println(currentBoard.substring(0, 3) + "\n" + currentBoard.substring(3, 6) + "\n" + currentBoard.substring(6, 9));
     }
 }
